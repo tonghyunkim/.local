@@ -1,0 +1,256 @@
+#!/usr/bin/perl
+
+#===================
+#===================
+use strict;
+use warnings;
+use Getopt::Long;
+
+#=======================
+# global variables
+#=======================
+our %form = ();
+
+
+#=======================
+# BEGIN
+#=======================
+BEGIN {
+
+  #=======================
+  # sub printHtmlHeader
+  #=======================
+  sub printHtmlHeader { print "Content-type: text/plain\n\n"; }
+
+  #=======================
+  # sub collect_form
+  #=======================
+  sub collect_form {
+
+    my $buffer;
+
+    if  ( defined $ENV{HTTP_HOST} ) {
+      if ($ENV{"REQUEST_METHOD"} eq "POST") {
+        read(STDIN,$buffer,$ENV{"CONTENT_LENGTH"});
+        $form{"method"} = "POST";
+      } else {
+        $buffer = $ENV{QUERY_STRING};
+        $form{"method"} = "GET";
+      }
+
+      my @fof = split(/&/,$buffer);
+      my $field;
+      foreach $field(@fof) {
+        my ($name,$value) = split(/=/,$field);
+        $value =~ tr/+/ /;
+        $value =~ s/%([a-fA-F0-9]{2})/pack("C",hex($1))/eg;
+        if ($form{$name}) {
+          $form{$name} .= "\n$value";
+        } else {
+          $form{$name} = $value;
+        }
+      }
+      return %form;
+    }
+    else
+    {
+      my ($opt_veid, $opt_cmd, $opt_pid, $opt_mode, $opt_example, $opt_vpscontainter, $opt_force, $console_opt_verbose, $opt_help);
+      GetOptions( "veid|v=i"      => \$opt_veid,
+            "cmd|c=s"      => \$opt_cmd,
+            "pid|p=s"      => \$opt_pid,
+            "mode|m=s"      => \$opt_mode,
+            "example"      => \$opt_example,
+            "vpstkimcontainter=s"  => \$opt_vpscontainter,
+            "force"        => \$opt_force,
+            "verbose"      => \$console_opt_verbose,
+            "help"        => \$opt_help);
+      $form{veid} = $opt_veid;
+      $form{cmd} = $opt_cmd;
+      $form{pid} = $opt_pid;
+      $form{mode} = $opt_mode;
+      $form{example} = $opt_example;
+      $form{vpscontainter} = $opt_vpscontainter;
+      $form{force} = $opt_force;
+
+      &printHelpAndExit if $opt_help;
+      return %form;
+    }
+  }
+
+  #=======================
+  # sub printHelpAndExit
+  #=======================
+  sub printHelpAndExit {
+    print << "__HELP"
+$0
+ --veid              : veid to control
+ --cmd=list          : list command
+ --cmd=kill          : kill command
+ --pid=<PID>         : pid(s), integer, separated by comma(',')
+ --mode=<MODE>       : refer to below details
+ --example           : use example execution results.
+ --force             : do execution forcely. even in test env.
+ --verbose           : verbose on
+ --help              : display this help.
+
+  <MODE> = one of 'SIGHUP,SIGKILL,SIGTERM,SIGINT' case-sensitive.
+__HELP
+  ;
+    exit;
+  }
+
+  #=======================
+  # sub printParamErrorAndExit
+  #=======================
+  sub printParamErrorAndExit {
+    &printHtmlHeader if defined $ENV{HTTP_HOST};
+    print "NG\nParam Error : $_[0]";
+    &printHelpAndExit unless defined $ENV{HTTP_HOST};
+    exit;
+  }
+
+  #===================
+  # sub validateForm
+  #===================
+  sub validateForm {
+    if ( not ($form{veid} && $form{cmd}) ) {
+      printParamErrorAndExit('no veid or cmd');
+    } else {
+      printParamErrorAndExit('veid should be digits') unless ($form{veid} =~ /^([\d,]+)$/);
+      printParamErrorAndExit('unknown cmd') unless ($form{cmd} =~ /^list$|^kill$/);
+      printParamErrorAndExit('no pid') if ( ($form{cmd} eq 'kill') && ! $form{pid} );
+      printParamErrorAndExit('no mode') if ( ($form{cmd} eq 'kill') && ! $form{mode} );
+      #printParamErrorAndExit('pid should be digits') if ($form{pid} && ! ($form{pid} =~ /^(\d+)$/) );
+      printParamErrorAndExit('unknown mode') if ($form{mode} && ! ($form{mode} =~ /^SIGHUP$|^SIGKILL$|^SIGTERM$|^SIGINT$/) );
+
+      if (! $form{example} ) {
+        $form{vpscontainter} ||= __getNodeServerByVeid(&__getDefaultDBHandle, $form{veid});
+        printParamErrorAndExit("can't get vps node server name by veid($form{veid}).\n") unless $form{vpscontainter};
+      }
+    }
+  }
+
+} # end of BEGIN
+
+
+#=======================
+# INIT
+#=======================
+INIT {
+
+#  &collect_form;
+#  &validateForm;
+
+
+  my %hosthash = (
+    "tkimhost", "172.20.65.211",
+    "C2#dev:staff-api11001.g1.tyo1", "172.21.20.25",
+    "C2#prod:staff-api11001.g1.tyo1", "172.21.66.33",
+    "C2#prod:staff-api11001.g1.sjc1", "172.21.84.33",
+    "C2#prod:staff-api11001.g1.sin1", "172.21.102.33",
+    "Git#gitlab01.tools.internal-gmo", "172.20.24.100",
+    "Git#gitlab02.tools.internal-gmo", "172.20.24.99",
+    "U8#dev:allinone01", "10.110.154.51",
+    "U8#dev:centos70-php55", "10.110.154.111",
+    "U8#dev:cp", "157.7.146.4",
+    "U8#dev:ext-api01", "10.110.154.88",
+    "U8#dev:int-api01", "10.110.154.65",
+    "U8#dev:stafftoo01", "10.110.154.66",
+    "U8#prod:api-app-u8-01", "10.110.119.159",
+    "U8#prod:ext-api-u8-01", "10.110.119.170",
+    "U8#prod:ext-api-u8-02", "10.110.119.151",
+    "U8#prod:ext-api-u8-03", "10.110.119.156",
+    "U8#prod:int-api-u8-03", "10.110.119.218",
+    "U8#prod:staff-tools-u8-01", "10.110.119.219",
+    "U30#dev:dev-centos65-php55", "10.110.154.112",
+    "U30#dev:ext-api01-u30-01", "10.110.154.79",
+    "U30#prod:api-app-u30-01", "172.20.152.14",
+    "U30#prod:ext-api-u30-01", "10.110.119.75",
+    "U30#prod:ext-api-u30-02", "10.110.119.76",
+    "U30#prod:int-api-u30-01", "172.20.152.27",
+    "U31#prod:kst-vps-api-u31-01", "172.21.158.40",
+    "U31#prod:staff-api-u31-01", "10.110.237.142",
+    "U40#dev:staff-api-u40-01.apu40", "172.21.158.43",
+    "U40#prod:staff-api-u40-01.apu40", "10.110.207.43",
+    "Z#dev:vps-z-staff-api01.tyo1", "172.21.20.46",
+    "Z#prod:zcom-staff-api11001.g1.tyo1", "172.21.66.73",
+    "Z#prod:zcom-staff-api11001.g1.sjc1", "172.21.84.29",
+    "Z#prod:zcom-staff-api11001.g1.sin1", "172.21.102.29"
+  );
+
+  my %filtered = &show_host;
+
+  while (<STDIN>) {
+    if (/\d/i) {
+      my $keyname = (sort keys %filtered)[$_];
+      if ($keyname) {
+        my $host = $filtered{$keyname};
+        print "\nconnecting to $host ($keyname)\n";
+        system("ssh tkim\@$host");
+        exit(1);
+      }
+      else
+      {
+        print "input again > ";
+      }
+    }
+    else
+    {
+      exit(1) if (/q/);
+      print "input again > ";
+    }
+  }
+
+  #=======================
+  # show and return (filtered) host
+  #=======================
+  sub show_host {
+    my ($key, $value);
+
+    # filter with ARGV
+    my %filtered = ();
+    w: while ( my ($key, $value) = each %hosthash ) {
+      if (@ARGV) {
+        foreach my $keyword (@ARGV) {
+          next w if ( $key !~ /$keyword/);
+        }
+        $filtered{$key} = $value;
+      }
+    }
+
+    %filtered = %hosthash unless %filtered;
+
+    # show
+    if (%filtered) {
+      my $ii = 0;
+      print "\n";
+
+      # while ( ($key, $value) = each %filtered ) {
+      foreach my $key (sort keys %filtered) {
+        print "$ii) $key\n";
+        $ii++
+      }
+      print "\nhost number to connect or 'q' to quit> ";
+    }
+    return %filtered;
+  }
+} # end of INIT
+
+__END__
+[tkim@tkimhost .local]$ ./mssh u30
+
+0) U30#prod:api-app-u30-01
+1) U30#prod:ext-api-u30-01
+2) U30#prod:int-api-u30-01
+3) U30#dev:ext-api01-u30-01
+4) U30#prod:ext-api-u30-02
+
+host number to connect or 'q' to quit> 0
+
+connecting to 172.20.152.14 (U30#prod:api-app-u30-01)
+tkim@172.20.152.14's password:
+Last login: Tue Jan  5 15:40:46 2016 from 172.20.65.211
+[tkim@api-app-u30-01 ~]$
+
+
+
