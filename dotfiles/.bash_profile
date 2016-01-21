@@ -14,8 +14,8 @@ export PATH
 
 ############### git prompt for bash
 # load script
-source $HOME/bin/git-completion.bash
-source $HOME/bin/git-prompt.sh
+source $HOME/.local/bin/git-completion.bash
+source $HOME/.local/bin/git-prompt.sh
 
 # set prompt variables
 GIT_PS1_SHOWDIRTYSTATE=1
