@@ -1,5 +1,11 @@
 # .bash_profile
 
+# The main difference with shell config files is that some are only read by "login" shells (eg. when you login from another host, or login at the text console of a local unix machine). these are the ones called, say, .login or .profile or .zlogin (depending on which shell you're using).
+
+# Then you have config files that are read by "interactive" shells (as in, ones connected to a terminal (or pseudo-terminal in the case of, say, a terminal emulator running under a windowing system). these are the ones with names like .bashrc, .tcshrc, .zshrc, etc.
+
+# bash complicates this in that .bashrc is only read by a shell that's both interactive and non-login, so you'll find most people end up telling their .bash_profile to also read .bashrc with something like
+
 # Get the aliases and functions
 if [ -f ~/.bashrc ]; then
 	. ~/.bashrc
@@ -14,8 +20,11 @@ export PATH
 
 ############### git prompt for bash
 # load script
-source $HOME/.local/bin/git-completion.bash
-source $HOME/.local/bin/git-prompt.sh
+[[ -r ~/.local/bin/git-completion.bash ]] && \
+  source $HOME/.local/bin/git-completion.bash
+
+[[ -r ~/.local/bin/git-prompt.sh ]] && \
+  source $HOME/.local/bin/git-prompt.sh
 
 # set prompt variables
 GIT_PS1_SHOWDIRTYSTATE=1
