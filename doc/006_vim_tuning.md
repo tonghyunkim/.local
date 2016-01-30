@@ -26,3 +26,21 @@ curl -sS https://raw.githubusercontent.com/mkropat/vim-dwiw2015/master/bootstrap
 7. to close Window or Tab? 
    ZZ [Control+w]c :clo :q :tabclo
 8. 
+
+
+## gvim setting.
+1. install minimal x11 server
+   sudo yum install xorg-x11-server-utils xauth xorg-x11-fonts-*
+2. restart sshd and xhost
+   #service ssh restart
+   /etc/init.d/sshd restart
+   xhost +
+   you might need reboot
+3. install your favorite programming font
+   sudo yum install levien-inconsolata-fonts
+4. customize your .gvimrc
+   :set guifont=Inconsolata\ Medium:h11
+   :hi Menu font=
+
+
+
