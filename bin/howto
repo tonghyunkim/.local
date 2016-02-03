@@ -1,0 +1,41 @@
+#!/usr/bin/perl
+use File::Spec::Functions;
+use strict;
+use warnings;
+
+my $doc_dir = '~/.local/doc';
+$doc_dir = 'C:\Users\usr0100023\.local\doc' if ($^O =~ /win/ || $^O =~ /msys/) ;
+
+opendir(my $dh, $doc_dir) || die "can't opendir $doc_dir: $!";
+my @files = readdir($dh);
+@files = grep { !/^\./ } @files;
+
+#if (@ARGV) {
+foreach my $file (@files) {
+  foreach my $keyword (@ARGV) {
+    @files = grep { /$keyword/ } @files
+  }
+}
+
+if (@files) {
+  my $ii = 0; print "\n";
+  foreach my $file (sort @files) {
+    print "$ii) $file\n";
+    $ii++
+  }
+  print "\ninput number to open or 'q' to quit> ";
+}
+
+while (<STDIN>) {
+  if (/\d/i) {
+    print "\nopenning $files[$_]\n";
+    system("less " . catfile($doc_dir, $files[$_]) );
+    exit(1);
+  }
+  else {
+    exit(1) if (/q/);
+    print "input again > ";
+  }
+}
+
+__END__
