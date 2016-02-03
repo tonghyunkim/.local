@@ -3,7 +3,7 @@ use File::Spec::Functions;
 use strict;
 use warnings;
 
-my $doc_dir = '~/.local/doc';
+my $doc_dir = '/home/tkim/.local/doc';
 $doc_dir = 'C:\Users\usr0100023\.local\doc' if ($^O =~ /win/ || $^O =~ /msys/) ;
 
 opendir(my $dh, $doc_dir) || die "can't opendir $doc_dir: $!";
