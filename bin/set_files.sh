@@ -5,3 +5,6 @@ for filename in ~/.local/dotfiles/.*; do
     cp "$filename" ~/
   fi
 done
+
+git config --global user.email "crowdy@outlook.com"
+git config --global user.name "tonghyun kim"
