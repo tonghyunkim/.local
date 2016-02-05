@@ -1,0 +1,2 @@
+curl -sS https://raw.githubusercontent.com/mkropat/vim-dwiw2015/master/bootstrap.sh | sh
+
