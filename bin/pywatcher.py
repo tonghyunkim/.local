@@ -1,6 +1,7 @@
-#######!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf8 -*-
 
+import os
 import sys
 import time
 import logging
@@ -10,7 +11,7 @@ from watchdog.events import LoggingEventHandler
 from watchdog.events import PatternMatchingEventHandler
 
 class MyHandler(PatternMatchingEventHandler):
-  patterns = ["*.py"]
+  patterns = ["*.py", "*.go", "*.pl", "*.php", "*.sh"]
 
   def process(self, event):
     """
@@ -26,8 +27,22 @@ class MyHandler(PatternMatchingEventHandler):
     print("=" * 80)
     logging.info(event.src_path + " changed.")
     print("=" * 80)
-    subprocess.call(["python", event.src_path])
-
+    fname, fext = os.path.splitext(event.src_path)
+    if fext==".py":
+        subprocess.call(["python", event.src_path])
+    elif fext==".pl":
+        subprocess.call(["perl", event.src_path])
+    elif fext==".go":
+        subprocess.call(["go", "run", event.src_path])
+    elif fext==".php":
+        subprocess.call(["php", event.src_path])
+    elif fext==".sh":
+        subprocess.call(["bash", event.src_path])
+    elif fext==".rb":
+        subprocess.call(["ruby", event.src_path])
+    else:
+        subprocess.call(["bash", event.src_path])
+        
   def on_modified(self, event):
     self.process(event)
 

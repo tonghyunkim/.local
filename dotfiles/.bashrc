@@ -16,11 +16,4 @@ export PERL_MM_OPT="INSTALL_BASE=/home/tkim/perl5";
 export PERL5LIB="/home/tkim/perl5/lib/perl5:$PERL5LIB";
 export PATH="/home/tkim/perl5/bin:$PATH";
 
-alias cdbin='cd ~/.local/bin'
-alias cdlocal='cd ~/.local'
-alias cddoc='cd ~/.local/doc'
-alias cddotfiles='cd ~/.local/dotfiles'
-alias bashrc='vim ~/.bashrc; source ~/.bashrc;'
-alias gitpush='pushd .; cd ~/.local; git add -A; git commit -m "update document"; git push; popd'
-alias ls='ls --color'
-alias dic='sdcv'
+alias ls='ls --color=auto'
