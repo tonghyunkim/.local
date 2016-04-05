@@ -9,19 +9,27 @@ git remote add upstream http://gitlab.tkim.me/test
 git config -l
 git config --list
 git config --global credential.helper cache
+git config credential.helper store
+git config --unset credential.helper
 git config --global core.editor emacs
+git config --get remote.origin.url
+git remote show origin
+git update-index --assume-unchanged myfile
 # log
 git log --oneline --decorate --graph --all
 git log master
 git log --follow index.html
+git log -Spassword
+git log --patch  | less +/searching_string
+git rev-list --all
 # check out
-git clone --depth=14 [url]
+git clone --depth=14 http://gitlab.tkim.me/project.git
 git checkout master && git cherry-pick E
 git checkout master && git cherry-pick D J E
 # rebase
 git checkout topic && git rebase master
 git rebase master topic
-git checkout branch && git rebase BaseBranch
+git checkout master && git rebase BaseBranch
 git rebase --onto master topic subtopic
 git rebase master subtopic
 git rebase -i A
@@ -35,18 +43,47 @@ git rebase --abort
 git reflog
 git reset --hard [commit_id_before_rebase]
 # push
-git push [remote] [branch]
-git push [remote] v0.1
-git push [remote] [local branch]:[remote branch]
+git push origin master
+git push origin v0.1
+git push origin "feat/CR15032/tkim-fix":"feat/CR15032/main"
+git push origin :"feat/CR15032/main"
 # branch
-git branch [branch name]
-git checkout -b [local branch] [remote]/[remote branch]
-git checkout --track [remote]/[remote branch]
-git branch -u [remote]/[remote branch]
+wip: working in progress; stuff I know won't be finished soon
+feat: feature I'm adding or expanding
+bug: bug fix or experiment
+new/test/ver/fix
+junk: throwaway branch created to experiment
+git branch "new/project/main"
+git branch "feat/CR15032/main"
+git branch "test/CR15032/main"
+git branch "fix/CR15032/main"
+git branch "fix/CR15032/additional-fix"
+git branch --list "test/*"
+git branch --remotes
+git branch -r
+git branch --all
+git branch -a
+git checkout -b "feat/CR15032/main" origin/develop
+git checkout develop && git merge --no-ff "feat/CR15032/main"
+git checkout master && git merge --no-ff release-1.2 && git tag -a 1.2
+git branch -D "feat/CR15032/main" && git push origin develop
+git checkout -b "hotfix/CR15032/main" origin/master
+git checkout --track origin/release
+git branch -u origin/master
+git push origin --delete "test/CR15032/main"
+git push origin :"test/CR15032/main"
+git branch --delete "test/CR15032/main"
+git branch -d "test/CR15032/main"
+git branch -D "test/CR15032/main"
+git branch --delete --remote origin/"test/CR15032/main"
+git branch -dr origin/"test/CR15032/main"
+git fetch origin --prune
+git fetch origin -p
 # commit
-git push [remote] --delete [branch]
 git commit -m 'initial commit'
 git add forgotten_file
+git rm -r mydir
+git rm -r --cached myFolder
 git commit --amend
 # diff
 git reflog
@@ -73,6 +110,8 @@ git diff -u
 # checkout
 git checkout --stat dev@{1} dev
 git checkout dev@{1} dev
+git fetch upstream && git checkout master
+git rebase upstream/master && git push -f origin master
 # reference
 git rev-parse HEAD
 cat .git/HEAD
@@ -88,7 +127,7 @@ lg = !"git lg1"
 git tag -l
 git tag --list
 git show v0.1
-git push [remote] [branch] --tags
+git push origin release-1.2 --tags
 git tag -d v0.1
 git verify-tag v0.1
 git push [remote] :[remote branch]
@@ -97,12 +136,15 @@ git apply --check filename.patch
 git checkout master && git merge topic
 git checkout master && git merge topic
 # revert
-git reset [commit]
-git reset --soft [commit]
+git reset HEAD^
+git reset --soft HEAD^
+git rebase -i HEAD~2
+git push -f origin HEAD^:master
 git update remote
 git fetch upstream
 git reset --hard upstream/master --
 git push origin +master
+git push origin +7f6d03:master
 git reset HEAD index.html
 git reset HEAD --hard index.html
 git checkout -- index.html
@@ -111,9 +153,12 @@ git reset --hard HEAD~1
 git reset --soft HEAD~1 && git commit -m "2 commit to 1 commit"
 git checkout master
 git pull origin
+git revert --continue
+git revert --quit
+git revert --abort
 # merge
 git merge origin/master
-git merge --ff-only origin/master
+git merge --ff-only origin/release-1.2
 # stash
 git stash
 git stash save
@@ -134,5 +179,5 @@ export GIT_NOTES_REF=ref/notes/bugzilla
 git notes edit master
 git notes edit master~1
 git notes edit master~1
-git fetch [remote] refs/notes/*:refs/notes/*
-git push [remote] refs/notes/*
+git fetch upstream refs/notes/*:refs/notes/*
+git push upstream refs/notes/*
