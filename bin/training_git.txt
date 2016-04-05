@@ -1,0 +1,138 @@
+# remote
+git remote add origin http://gitlab.tkim.me/test
+git remote set-url origin http://gitlab.tkim.me/test
+git remote rename origin original-origin
+git remote -v
+git remote rm mystream
+git remote add upstream http://gitlab.tkim.me/test
+# config
+git config -l
+git config --list
+git config --global credential.helper cache
+git config --global core.editor emacs
+# log
+git log --oneline --decorate --graph --all
+git log master
+git log --follow index.html
+# check out
+git clone --depth=14 [url]
+git checkout master && git cherry-pick E
+git checkout master && git cherry-pick D J E
+# rebase
+git checkout topic && git rebase master
+git rebase master topic
+git checkout branch && git rebase BaseBranch
+git rebase --onto master topic subtopic
+git rebase master subtopic
+git rebase -i A
+git rebase -i A
+reword D
+git rebase -i A
+squash C
+git rebase --continue
+git rebase --skip
+git rebase --abort
+git reflog
+git reset --hard [commit_id_before_rebase]
+# push
+git push [remote] [branch]
+git push [remote] v0.1
+git push [remote] [local branch]:[remote branch]
+# branch
+git branch [branch name]
+git checkout -b [local branch] [remote]/[remote branch]
+git checkout --track [remote]/[remote branch]
+git branch -u [remote]/[remote branch]
+# commit
+git push [remote] --delete [branch]
+git commit -m 'initial commit'
+git add forgotten_file
+git commit --amend
+# diff
+git reflog
+git diff upstream/master:setup.php setup.php
+git diff upstream/master -- setup.php
+git diff upstream/master -- a.txt b.txt
+git diff -- ./index.html
+git diff --cached [commit] -- index.html
+git diff [commit] -- ./indexhtml
+git diff [commit] [commit]
+git diff refs/heads/master HEAD
+git diff origin/master master
+git diff origin/master...master
+git diff origin/master...master
+git diff --stat --color remotes/upstream/master master
+git diff aaaa..bbbb
+git diff HEAD^ HEAD
+git diff HEAD~
+git diff @~
+git diff HEAD~1..HEAD
+git diff -p
+git diff --patch
+git diff -u
+# checkout
+git checkout --stat dev@{1} dev
+git checkout dev@{1} dev
+# reference
+git rev-parse HEAD
+cat .git/HEAD
+git show-ref --head
+git reflog
+# tag
+git tag -a v0.1 -m 'ver 0.1'
+git log --pretty=oneline
+[alias]
+lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+lg = !"git lg1"
+git tag -l
+git tag --list
+git show v0.1
+git push [remote] [branch] --tags
+git tag -d v0.1
+git verify-tag v0.1
+git push [remote] :[remote branch]
+git merge --no--ff feature
+git apply --check filename.patch
+git checkout master && git merge topic
+git checkout master && git merge topic
+# revert
+git reset [commit]
+git reset --soft [commit]
+git update remote
+git fetch upstream
+git reset --hard upstream/master --
+git push origin +master
+git reset HEAD index.html
+git reset HEAD --hard index.html
+git checkout -- index.html
+git checkout [branch]
+git reset --hard HEAD~1
+git reset --soft HEAD~1 && git commit -m "2 commit to 1 commit"
+git checkout master
+git pull origin
+# merge
+git merge origin/master
+git merge --ff-only origin/master
+# stash
+git stash
+git stash save
+git stash list
+git stash pop
+git stash apply
+git stash drop
+# archive
+git archive --format=zip HEAD - repo.zip
+git notes add HEAD
+git notes --ref=redmine add -m '#12345' HEAD
+git notes add HEAD -m 'message'
+git log master
+git log --show-notes=bugzilla
+git log --show-notes=*
+# notes
+export GIT_NOTES_REF=ref/notes/bugzilla
+git notes edit master
+git notes edit master~1
+git notes edit master~1
+git fetch [remote] refs/notes/*:refs/notes/*
+git push [remote] refs/notes/*

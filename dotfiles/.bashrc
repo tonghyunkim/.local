@@ -17,3 +17,11 @@ export PERL5LIB="/home/tkim/perl5/lib/perl5:$PERL5LIB";
 export PATH="$PATH:$HOME/.local/bin:$HOME/bin:$HOME/perl5/bin:$PATH";
 
 alias ls='ls --color=auto'
+alias cdbin='cd ~/.local/bin'
+alias cdlocal='cd ~/.local'
+alias cddoc='cd ~/.local/doc'
+alias cddotfiles='cd ~/.local/dotfiles'
+alias httpdconf='less /etc/httpd/conf/httpd.conf'
+alias bashrc='vim ~/.bashrc; source ~/.bashrc;'
+alias editdoc="vim ~/.local/doc/$(hostname)"
+alias gitpush='pushd .; cd ~/.local; git add -A; git commit -m "update document"; git push; popd'

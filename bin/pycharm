@@ -1,0 +1,6 @@
+unamestr=$(uname)
+if [[ $unamestr =~ NT ]]; then
+    "C:\Program Files (x86)\JetBrains\PyCharm Community Edition 5.0.4\bin\pycharm.exe" $*
+else
+  echo "you are not on Windows"
+fi
