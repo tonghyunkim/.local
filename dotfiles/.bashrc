@@ -10,6 +10,12 @@ fi
 
 # User specific aliases and functions
 
+function gitpull () {
+  pushd .
+  cd ~/.local && git pull && set_files.sh && source ~/.bash_profile
+  popd
+}
+
 export PERL_LOCAL_LIB_ROOT="$PERL_LOCAL_LIB_ROOT:/home/tkim/perl5";
 export PERL_MB_OPT="--install_base /home/tkim/perl5";
 export PERL_MM_OPT="INSTALL_BASE=/home/tkim/perl5";
